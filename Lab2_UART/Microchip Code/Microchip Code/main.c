@@ -22,13 +22,18 @@ int main(void)
 {
 	usart_init(12);
 	
-	//uint16_t* primes = generate_primes();
+	uint16_t* primes = generate_primes();
 	
     /* Replace with your application code */
+	uint16_t i = 0;
     while (1) 
     {
-		print_num(123);
-		_delay_ms(500);
+		if (primes[i] != 0) {
+			print_num(primes[i]);
+			usart_transmit(44);
+			usart_transmit(32);
+			i++;
+		}
     }
 	
 }
