@@ -29,6 +29,8 @@ int main(void)
 		usart_transmit(32);
 	}
 	
+	free(primes);
+	
     /* Replace with your application code */
     while (1) 
     {

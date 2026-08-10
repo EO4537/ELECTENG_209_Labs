@@ -20,7 +20,7 @@ void print_num(uint16_t num) {
 }
 
 uint16_t* generate_primes(uint16_t numPrimes) {
-	uint16_t* primeList = (uint16_t*)malloc(numPrimes * sizeof(uint16_t));
+	uint16_t* primeList = (uint16_t*) malloc(numPrimes * sizeof(uint16_t));
 	uint8_t index = 0;
 	for (uint16_t i = 2; true; i++) {
 		bool isPrime = true;
