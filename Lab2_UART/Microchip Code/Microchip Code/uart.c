@@ -4,8 +4,6 @@
 void usart_init(uint16_t ubrr) {
 	UBRR0 = ubrr;
 	UCSR0B |= (1<<TXEN0);
-	UCSR0C |= (1<<UCSZ01);
-	UCSR0C |= (1<<UCSZ00);
 }
 
 void usart_transmit(uint8_t data) {
