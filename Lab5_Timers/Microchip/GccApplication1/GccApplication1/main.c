@@ -6,11 +6,15 @@
  */ 
 #define F_CPU 2000000UL
 
+#include "timer0.h"
+
+#include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
 int main(void)
 {
+	timer0_init();
 	DDRB = 0b11111111;
 	DDRC = 0b00000000;
 	DDRD = 0b00000000;
