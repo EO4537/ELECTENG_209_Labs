@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 int main(void)
 {
@@ -20,13 +21,9 @@ int main(void)
 	DDRD = 0b00000000;
 	
 	timer0_init();
+	sei();
 	
     while (1) 
-    {
-		if (timer0_check_clear_compare()) {
-			led_toggle();
-			
-		}
-    }
+    {}
 }
 
