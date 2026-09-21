@@ -9,4 +9,5 @@
 #include <avr/io.h>
 void led_toggle(){
 	//TODO: LED toggle code
+	PINB |= (1<<PORTB5);
 }
