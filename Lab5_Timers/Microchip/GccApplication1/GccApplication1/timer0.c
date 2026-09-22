@@ -11,9 +11,16 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
+volatile uint8_t timerInterrupts = 0;
+
 ISR(TIMER0_COMPA_vect) { //This ISR function is called when timer0 reaches
 	//compare value, compare flag is automatically cleared
-	led_toggle();
+	timerInterrupts++;
+	if (timerInterrupts == 10) {
+		timerInterrupts = 0;
+		led_toggle();
+	}
+	
 }
 
 void timer0_init(){
