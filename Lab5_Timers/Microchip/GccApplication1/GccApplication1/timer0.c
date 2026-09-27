@@ -11,24 +11,32 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
-volatile uint8_t timerInterrupts = 0;
+volatile uint8_t cycles = 0;
 
-ISR(TIMER0_COMPA_vect) { //This ISR function is called when timer0 reaches
+ISR(TIMER0_OVF_vect) { //This ISR function is called when timer0 reaches
 	//compare value, compare flag is automatically cleared
-	timerInterrupts++;
-	if (timerInterrupts == 10) {
-		timerInterrupts = 0;
-		led_toggle();
-	}
+	cycles++;
 	
 }
 
+ISR(INT0_vect) {
+	cycles = 0;
+	
+	EICRA |= (1 << ISC01);
+	EICRA |= (1 << ISC00);
+}
+
 void timer0_init(){
-	TCCR0A |= (1 << COM0A0);
-	TCCR0A |= (1 << WGM01);
-	TCCR0B |= (1 << CS02);
-	OCR0A = 77;
-	TIMSK0 |= (1 << OCIE0A);
+	//TCCR0A |= (1 << COM0A0);
+	//TCCR0A |= (1 << WGM01);
+	//TCCR0B |= (1 << CS01);
+	//TCCR0B |= (1 << CS02);
+	//OCR0A = 77;
+	//TIMSK0 |= (1 << OCIE0A);
+	
+	EIMSK |= (1 << INT0);
+	EICRA |= (1 << ISC01);
+	EICRA |= (1 << ISC00);
 }
 
 uint8_t timer0_check_clear_compare(){
