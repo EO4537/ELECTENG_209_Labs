@@ -79,16 +79,13 @@ int main(void)
 }
 
 void transmitNumber(uint8_t num, bool digit1) {
+	PORTB |= (1 << PORTB1);
+	PORTB |= (1 << PORTB0);
+	
 	uint8_t digitToTransmit;
 	if (digit1) {
-		PORTB &= ~(1 << PORTB0);
-		PORTB |= (1 << PORTB1);
-		
 		digitToTransmit = num / 10;
 	} else {
-		PORTB |= (1 << PORTB0);
-		PORTB &= ~(1 << PORTB1);
-		
 		digitToTransmit = num % 10;
 	}
 	switch (digitToTransmit) {
@@ -135,5 +132,10 @@ void transmitNumber(uint8_t num, bool digit1) {
 		default:
 			PORTB |= (1 << PORTB4);
 			break;
+	}
+	if (digit1) {
+		PORTB &= ~(1 << PORTB0);
+		} else {
+		PORTB &= ~(1 << PORTB1);
 	}
 }
