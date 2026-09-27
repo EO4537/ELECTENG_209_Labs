@@ -11,17 +11,37 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdint.h>
+#include <stdbool.h>
 
-void transmitNumber(uint8_t num);
+void transmitNumber(uint8_t num, bool digit1);
 
 volatile uint8_t counter;
+volatile bool digit1;
+volatile uint8_t cycles;
 
 ISR(PCINT0_vect) {
 	counter = 0;
 }
 
+ISR (TIMER0_COMPA_vect) {
+	transmitNumber(counter, digit1);
+	digit1 = !digit1;
+	cycles++;
+	if (cycles == 100) {
+		cycles = 0;
+		counter++;
+		if (counter == 100) {
+			counter = 0;
+		}
+	}
+}
+
 int main(void)
 {
+	cycles = 0;
+	counter = 0;
+	digit1 = true;
+	
 	// Push button
 	DDRB &= ~(1 << PORTB7);
 	
@@ -34,27 +54,44 @@ int main(void)
 	DDRB |= (1 << PORTB4);
 	
 	// Setup ds1/2
-	PORTB |= (1 << PORTB0);
-	PORTB &= ~(1 << PORTB1);
+	DDRB |= (1 << PORTB0);
+	DDRB |= (1 << PORTB1);
+	
+	// Timer setup
+	TCCR0A |= (1 << COM0A0);
+	TCCR0A |= (1 << WGM01);
+	
+	// Set to reset every ~10ms
+	TCCR0B |= (1 << CS02);
+	OCR0A |= 77;
 	
 	// Interrupts
 	PCICR |= (1 << PCIE0);
 	PCMSK0 |= (1 << PCINT7);
+	
+	TIMSK0 |= (1 << OCIE0A);
 	sei();
 	
-	counter = 0;
     /* Replace with your application code */
     while (1) 
     {
-		transmitNumber(counter);
-		counter++;
-		if (counter == 10) {counter = 0;}
-		_delay_ms(1000);
     }
 }
 
-void transmitNumber(uint8_t num) {
-	switch (num) {
+void transmitNumber(uint8_t num, bool digit1) {
+	uint8_t digitToTransmit;
+	if (digit1) {
+		PORTB &= ~(1 << PORTB0);
+		PORTB |= (1 << PORTB1);
+		
+		digitToTransmit = num / 10;
+	} else {
+		PORTB |= (1 << PORTB0);
+		PORTB &= ~(1 << PORTB1);
+		
+		digitToTransmit = num % 10;
+	}
+	switch (digitToTransmit) {
 		case 0:
 			PORTC = 0b00111111;
 			PORTB &= ~(1 << PORTB4);
