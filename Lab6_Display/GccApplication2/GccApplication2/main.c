@@ -9,12 +9,16 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #define SH_CP (1 << PORTC3)
 #define SH_DS (1 << PORTC4)
 #define SH_ST (1 << PORTC5)
 
 void transmitDigit(uint8_t num, uint8_t place);
+
+uint16_t number = 0;
+volatile uint16_t place = 0;
 
 int digits[10] = {
 	0b00111111,
@@ -29,6 +33,13 @@ int digits[10] = {
 	0b01101111
 };
 
+ISR (TIMER0_COMPA_vect) {
+	uint16_t digit = (number/(uint16_t)pow(10, place))%10;
+	transmitDigit(digit, place);
+	place++;
+	if (place == 4) {place = 0;}
+}
+
 int main(void)
 {
 	// Initialise display
@@ -41,7 +52,15 @@ int main(void)
 	DDRD |= (1 << DDD6);
 	DDRD |= (1 << DDD7);
 	
+	// Timer setup
+	TCCR0A |= (1 << WGM01);
 	
+	// Set to reset every ~10ms
+	TCCR0B |= (1 << CS02);
+	OCR0A |= 77;
+	
+	TIMSK0 |= (1 << OCIE0A);
+	sei();
 	
 	// Display 7
 	
@@ -49,14 +68,8 @@ int main(void)
     /* Replace with your application code */
     while (1) 
     {
-		transmitDigit(1, 0);
-		_delay_ms(10);
-		transmitDigit(2, 1);
-		_delay_ms(10);
-		transmitDigit(3, 2);
-		_delay_ms(10);
-		transmitDigit(4, 3);
-		_delay_ms(10);
+		_delay_ms(400);
+		number++;
     }
 }
 
@@ -64,7 +77,7 @@ void transmitDigit(uint8_t num, uint8_t place) {
 	// Reset pins
 	PORTD |= 0b11110000;
 	// Set new pin
-	PORTD &= ~(1 << (4 + place));
+	PORTD &= ~(1 << (7 - place));
 	
 	PORTC &= ~SH_CP;
 	PORTC &= ~SH_ST;
