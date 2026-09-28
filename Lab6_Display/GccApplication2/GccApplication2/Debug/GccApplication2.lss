@@ -3,29 +3,29 @@ GccApplication2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000014  00800100  00000150  000001c4  2**0
+  0 .data         00000014  00800100  00000198  0000020c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000150  00000000  00000000  00000074  2**1
+  1 .text         00000198  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001d8  2**0
+  2 .comment      00000030  00000000  00000000  00000220  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000208  2**2
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000250  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000028  00000000  00000000  00000248  2**0
+  4 .debug_aranges 00000028  00000000  00000000  00000290  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000732  00000000  00000000  00000270  2**0
+  5 .debug_info   000008a9  00000000  00000000  000002b8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000693  00000000  00000000  000009a2  2**0
+  6 .debug_abbrev 0000071a  00000000  00000000  00000b61  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000027b  00000000  00000000  00001035  2**0
+  7 .debug_line   00000340  00000000  00000000  0000127b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000034  00000000  00000000  000012b0  2**2
+  8 .debug_frame  00000034  00000000  00000000  000015bc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000396  00000000  00000000  000012e4  2**0
+  9 .debug_str    000003e1  00000000  00000000  000015f0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000007f  00000000  00000000  0000167a  2**0
+ 10 .debug_loc    00000151  00000000  00000000  000019d1  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000018  00000000  00000000  000016f9  2**0
+ 11 .debug_ranges 00000018  00000000  00000000  00001b22  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -70,7 +70,7 @@ Disassembly of section .text:
   74:	11 e0       	ldi	r17, 0x01	; 1
   76:	a0 e0       	ldi	r26, 0x00	; 0
   78:	b1 e0       	ldi	r27, 0x01	; 1
-  7a:	e0 e5       	ldi	r30, 0x50	; 80
+  7a:	e8 e9       	ldi	r30, 0x98	; 152
   7c:	f1 e0       	ldi	r31, 0x01	; 1
   7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
   80:	05 90       	lpm	r0, Z+
@@ -79,7 +79,7 @@ Disassembly of section .text:
   86:	b1 07       	cpc	r27, r17
   88:	d9 f7       	brne	.-10     	; 0x80 <__do_copy_data+0xc>
   8a:	0e 94 8c 00 	call	0x118	; 0x118 <main>
-  8e:	0c 94 a6 00 	jmp	0x14c	; 0x14c <_exit>
+  8e:	0c 94 ca 00 	jmp	0x194	; 0x194 <_exit>
 
 00000092 <__bad_interrupt>:
   92:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -223,17 +223,62 @@ int main(void)
  140:	8a b9       	out	0x0a, r24	; 10
 	
 	
-	
-	// Display 7
-	
-	transmitDigit(7, 3);
- 142:	63 e0       	ldi	r22, 0x03	; 3
- 144:	87 e0       	ldi	r24, 0x07	; 7
+    /* Replace with your application code */
+    while (1) 
+    {
+		transmitDigit(1, 0);
+ 142:	60 e0       	ldi	r22, 0x00	; 0
+ 144:	81 e0       	ldi	r24, 0x01	; 1
  146:	0e 94 4b 00 	call	0x96	; 0x96 <transmitDigit>
- 14a:	ff cf       	rjmp	.-2      	; 0x14a <main+0x32>
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
 
-0000014c <_exit>:
- 14c:	f8 94       	cli
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 14a:	87 e8       	ldi	r24, 0x87	; 135
+ 14c:	93 e1       	ldi	r25, 0x13	; 19
+ 14e:	01 97       	sbiw	r24, 0x01	; 1
+ 150:	f1 f7       	brne	.-4      	; 0x14e <main+0x36>
+ 152:	00 c0       	rjmp	.+0      	; 0x154 <main+0x3c>
+ 154:	00 00       	nop
+		_delay_ms(10);
+		transmitDigit(2, 1);
+ 156:	61 e0       	ldi	r22, 0x01	; 1
+ 158:	82 e0       	ldi	r24, 0x02	; 2
+ 15a:	0e 94 4b 00 	call	0x96	; 0x96 <transmitDigit>
+ 15e:	87 e8       	ldi	r24, 0x87	; 135
+ 160:	93 e1       	ldi	r25, 0x13	; 19
+ 162:	01 97       	sbiw	r24, 0x01	; 1
+ 164:	f1 f7       	brne	.-4      	; 0x162 <main+0x4a>
+ 166:	00 c0       	rjmp	.+0      	; 0x168 <main+0x50>
+ 168:	00 00       	nop
+		_delay_ms(10);
+		transmitDigit(3, 2);
+ 16a:	62 e0       	ldi	r22, 0x02	; 2
+ 16c:	83 e0       	ldi	r24, 0x03	; 3
+ 16e:	0e 94 4b 00 	call	0x96	; 0x96 <transmitDigit>
+ 172:	87 e8       	ldi	r24, 0x87	; 135
+ 174:	93 e1       	ldi	r25, 0x13	; 19
+ 176:	01 97       	sbiw	r24, 0x01	; 1
+ 178:	f1 f7       	brne	.-4      	; 0x176 <main+0x5e>
+ 17a:	00 c0       	rjmp	.+0      	; 0x17c <main+0x64>
+ 17c:	00 00       	nop
+		_delay_ms(10);
+		transmitDigit(4, 3);
+ 17e:	63 e0       	ldi	r22, 0x03	; 3
+ 180:	84 e0       	ldi	r24, 0x04	; 4
+ 182:	0e 94 4b 00 	call	0x96	; 0x96 <transmitDigit>
+ 186:	87 e8       	ldi	r24, 0x87	; 135
+ 188:	93 e1       	ldi	r25, 0x13	; 19
+ 18a:	01 97       	sbiw	r24, 0x01	; 1
+ 18c:	f1 f7       	brne	.-4      	; 0x18a <main+0x72>
+ 18e:	00 c0       	rjmp	.+0      	; 0x190 <main+0x78>
+ 190:	00 00       	nop
+ 192:	d7 cf       	rjmp	.-82     	; 0x142 <main+0x2a>
 
-0000014e <__stop_program>:
- 14e:	ff cf       	rjmp	.-2      	; 0x14e <__stop_program>
+00000194 <_exit>:
+ 194:	f8 94       	cli
+
+00000196 <__stop_program>:
+ 196:	ff cf       	rjmp	.-2      	; 0x196 <__stop_program>

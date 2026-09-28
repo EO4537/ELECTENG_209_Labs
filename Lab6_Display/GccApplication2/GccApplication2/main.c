@@ -45,12 +45,18 @@ int main(void)
 	
 	// Display 7
 	
-	transmitDigit(7, 3);
+	
     /* Replace with your application code */
     while (1) 
     {
-		//
-		//_delay_ms(1000);
+		transmitDigit(1, 0);
+		_delay_ms(10);
+		transmitDigit(2, 1);
+		_delay_ms(10);
+		transmitDigit(3, 2);
+		_delay_ms(10);
+		transmitDigit(4, 3);
+		_delay_ms(10);
     }
 }
 
